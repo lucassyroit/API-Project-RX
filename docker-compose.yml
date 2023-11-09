@@ -1,6 +1,6 @@
 version: "3.9"
 services:
- api-service:
+ system-service:
   image: lucilas/api-rx-ls
   ports:
     - "8000:8000"
