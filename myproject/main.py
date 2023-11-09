@@ -6,6 +6,7 @@ import crud_operations
 import models
 import schemas
 from database import SessionLocal, engine
+from typing import List
 
 if not os.path.exists('.\sqlitedb'):
     os.makedirs('.\sqlitedb')
@@ -19,7 +20,6 @@ origins = [
     "http://localhost:8080/",
     "https://localhost.tiangolo.com",
     "http://127.0.0.1:5500/",
-    "http://127.0.0.1:8000/",
 ]
 
 app.add_middleware(

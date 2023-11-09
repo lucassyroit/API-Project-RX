@@ -1,11 +1,11 @@
 version: "3.9"
 services:
- useritem-api-service:
+ api-service:
   image: lucilas/api-rx-ls
   ports:
     - "8000:8000"
   volumes:
-    - sqlite_useritems_volume:/code/sqlitedb
+    - sqlite_rallycross_volume:/code/sqlitedb
 
 volumes:
-  sqlite_useritems_volume:
+  sqlite_rallycross_volume:
