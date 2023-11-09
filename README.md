@@ -4,11 +4,11 @@ Project for class API Development
 
 ## Table of contents
 
-1. Theme
-2. API Description
-   1. Postman
-   2. API Docs
-3. Hosted API
+1. [Theme](#theme)
+2. [API Description](#api-description)
+    1. [Postman](#postman)
+    2. [API Docs](#api-docs)
+3. [Hosted API](#hosted-api)
 
 ## 1. Theme
 
