@@ -2,6 +2,7 @@ import os
 
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
+from typing import List
 
 import crud
 import models
@@ -22,39 +23,35 @@ def get_db():
     finally:
         db.close()
 
-# POST /users
-@app.post("/users", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_email(db, email=user.email)
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    return crud.create_user(db, user=user)
 
-# GET /users/?skip=&limit=
-@app.get("/users/", response_model=list[schemas.User])
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    users = crud.get_users(db, skip=skip, limit=limit)
-    return users
+# Get all drivers
+@app.get("/drivers/", response_model=List[schemas.Driver])
+def read_drivers(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    drivers = crud.get_drivers(db, skip=skip, limit=limit)
+    return drivers
 
-#GET /users/{user_id}
-@app.get("/users/{user_id}", response_model=schemas.User)
-def read_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = crud.get_user(db, user_id=user_id)
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user
 
-#GET /items/?skip=&limit=
-@app.get("/items/", response_model=list[schemas.Item])
-def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    items = crud.get_items(db, skip=skip, limit=limit)
-    return items
+# Get a specific driver
+@app.get("/drivers/{driver_id}", response_model=schemas.Driver)
+def read_driver(driver_id: int, db: Session = Depends(get_db)):
+    driver = crud.get_driver(db, driver_id=driver_id)
+    if driver is None:
+        raise HTTPException(status_code=404, detail="Driver not found")
+    return driver
 
-#POST /users/{user_id}/items/
-@app.post("/users/{user_id}/items/", response_model=schemas.Item)
-def create_item_for_user(user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)):
-    return crud.create_item(db, item=item, user_id=user_id)
 
+# Create a new driver
+@app.post("/drivers/", response_model=schemas.Driver)
+def create_driver(driver: schemas.DriverCreate, db: Session = Depends(get_db)):
+    return crud.create_driver(db=db, driver=driver)
+
+
+# Delete a driver
+@app.delete("/drivers/{driver_id}")
+def delete_driver(driver_id: int, db: Session = Depends(get_db)):
+    if not crud.delete_driver(db, driver_id):
+        raise HTTPException(status_code=404, detail="Driver not found")
+    return {"detail": "Driver deleted"}
 
 
 
