@@ -1,7 +1,7 @@
 version: "3.9"
 services:
  useritem-api-service:
-  image: miverboven/python-db-test2324
+  image: lucilas/api-rx-ls
   ports:
     - "8000:8000"
   volumes:
