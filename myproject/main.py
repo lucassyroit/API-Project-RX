@@ -23,7 +23,9 @@ origins = [
     "http://localhost:8080/",
     "https://localhost.tiangolo.com",
     "http://127.0.0.1:5500/",
-    "https://lucassyroit.github.io/"
+    "http//lucassyroit.github.io/",
+    "https://lucassyroit.github.io/",
+    "https://lucassyroit.github.io/API-Project-RX-frontend/",
 ]
 
 app.add_middleware(
