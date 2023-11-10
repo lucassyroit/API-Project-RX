@@ -1,3 +1,4 @@
+# Imports
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,17 +9,21 @@ import schemas
 from database import SessionLocal, engine
 from typing import List
 
+# Database Initialization
 if not os.path.exists('.\sqlitedb'):
     os.makedirs('.\sqlitedb')
 models.Base.metadata.create_all(bind=engine)
 
+# FastAPI App Setup
 app = FastAPI()
 
+# CORS Middleware Configuration:
 origins = [
     "http://localhost/",
     "http://localhost:8080/",
     "https://localhost.tiangolo.com",
     "http://127.0.0.1:5500/",
+    "https://lucassyroit.github.io/"
 ]
 
 app.add_middleware(
@@ -29,7 +34,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
+# Database Dependency
 def get_db():
     db = SessionLocal()
     try:
@@ -58,7 +63,6 @@ def get_driver(driver_id: int, db: Session = Depends(get_db)):
 @app.post("/createDiver/", response_model=schemas.Driver)
 def create_driver(driver: schemas.DriverCreate, db: Session = Depends(get_db)):
     return crud_operations.create_driver(db=db, driver=driver)
-
 
 
 # Delete a driver
