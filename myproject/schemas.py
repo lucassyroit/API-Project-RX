@@ -6,7 +6,7 @@ class DriverBase(BaseModel):
     last_name: str
     country: str
     team: str
-    active: bool
+    is_active: bool
 
 
 class DriverCreate(DriverBase):
