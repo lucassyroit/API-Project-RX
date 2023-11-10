@@ -10,7 +10,6 @@ from typing import List
 
 if not os.path.exists('.\sqlitedb'):
     os.makedirs('.\sqlitedb')
-
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()

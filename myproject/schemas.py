@@ -9,6 +9,7 @@ class DriverBase(BaseModel):
 class DriverCreate(DriverBase):
     country: str
     team: str
+    is_active: bool
 
     class Config:
         orm_mode = True
@@ -18,6 +19,7 @@ class Driver(DriverBase):
     id: int
     country: str
     team: str
+    is_active: bool
 
     class Config:
         orm_mode = True
