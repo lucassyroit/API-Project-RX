@@ -20,6 +20,33 @@ You can look at other classes within rallycross. You can possibly work with resu
 ## 2. API Description
 
 **main.py**
+
+
+The API has two GET endpoints, one POST endpoint and one delete endpoint.
+
+1. GET /drivers/ 
+   - Description: Retrieves a list of all drivers.
+   - Parameters:
+     - skip (query parameter, optional): Number of records to skip.
+     - limit (query parameter, optional): Maximum number of records to retrieve.
+   - Response: Returns a list of driver objects (List[schemas.Driver]).
+2. GET /drivers/{driver_id} 
+   - Description: Retrieves details of a specific driver based on the provided driver_id.
+   - Parameters:
+     - driver_id (path parameter): ID of the driver to retrieve.
+   - Response: Returns the details of the specified driver (schemas.Driver).
+   - Error Handling: If the driver with the given ID is not found, it raises an HTTPException with a 404 status code.
+3. POST /createDriver/ 
+   - Description: Creates a new driver based on the provided data.
+   - Request Body: Expects a JSON payload containing data for creating a new driver (schemas.DriverCreate).
+   - Response: Returns the details of the newly created driver (schemas.Driver).
+4. DELETE /deleteDriver/{driver_id}
+   - Description: Deletes a driver based on the provided driver_id.
+   - Parameters:
+      - driver_id (path parameter): ID of the driver to delete.
+   - Response: Returns a JSON response indicating the success of the deletion.
+   - Error Handling: If the driver with the given ID is not found, it raises an HTTPException with a 404 status code.
+
 ```python
 # Imports
 from fastapi import Depends, FastAPI, HTTPException
@@ -99,6 +126,9 @@ def delete_driver(driver_id: int, db: Session = Depends(get_db)):
 ```
 
 **database.py**
+
+This code sets up the SQLAlchemy components for working with a SQLite database in a FastAPI application.
+
 ```python
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -116,6 +146,9 @@ Base = declarative_base()
 ```
 
 **crud_operations.py**
+
+This set of functions provides the basic CRUD (Create, Read, Update, Delete) operations for interacting with a database that stores information about drivers.
+
 ```python
 from sqlalchemy.orm import Session
 import models
@@ -151,12 +184,58 @@ def delete_driver(db: Session, driver_id: int):
     return False
 ```
 **models.py**
+
+This code defines a SQLAlchemy model for the Driver entity in a database
+
 ```python
+from sqlalchemy import Column, Integer, String, Boolean
+
+from database import Base
+
+
+class Driver(Base):
+    __tablename__ = "driver"
+
+    id = Column(Integer, primary_key=True, index=True)
+    first_name = Column(String, index=True)
+    last_name = Column(String, index=True)
+    country = Column(String, index=True, default="Unknown")
+    team = Column(String, index=True, default="none")
+    is_active = Column(Boolean, index=True, default=True)
+
 ```
 **schemas.py**
-```python
-```
 
+This code defines Pydantic models for working with data related to the Driver entity in the FastAPI application.
+
+```python
+from pydantic import BaseModel
+
+
+class DriverBase(BaseModel):
+    first_name: str
+    last_name: str
+
+
+class DriverCreate(DriverBase):
+    country: str
+    team: str
+    is_active: bool
+
+    class Config:
+        orm_mode = True
+
+
+class Driver(DriverBase):
+    id: int
+    country: str
+    team: str
+    is_active: bool
+
+    class Config:
+        orm_mode = True
+
+```
 
 ### 2.1 Postman
 #### GET --> /drivers/
