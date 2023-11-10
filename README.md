@@ -12,15 +12,187 @@ Project for class API Development
 
 ## 1. Theme
 
-Description of the theme...
+I have chosen for an API about RallyCross(RX) because this is one of my favorite motorsports in the world.
+In addition, motorsport rallycross in general is one of the most data-rich sports in the world. 
+You can do a lot with it and it is an easily expandable topic. 
+You can look at other classes within rallycross. You can possibly work with results, teams, etc. in the API.
 
 ## 2. API Description
 
-Description of the API...
+**main.py**
+```python
+# Imports
+from fastapi import Depends, FastAPI, HTTPException
+from sqlalchemy.orm import Session
+from fastapi.middleware.cors import CORSMiddleware
+import os
+import crud_operations
+import models
+import schemas
+from database import SessionLocal, engine
+from typing import List
+
+# Database Initialization
+if not os.path.exists('.\sqlitedb'):
+    os.makedirs('.\sqlitedb')
+models.Base.metadata.create_all(bind=engine)
+
+# FastAPI App Setup
+app = FastAPI()
+
+# CORS Middleware Configuration:
+origins = [
+    "http://localhost/",
+    "http://localhost:8080/",
+    "https://localhost.tiangolo.com",
+    "http://127.0.0.1:5500/",
+    "http//lucassyroit.github.io/",
+    "https://lucassyroit.github.io/",
+    "https://lucassyroit.github.io/API-Project-RX-frontend/",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Database Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+# Get all drivers
+@app.get("/drivers/", response_model=List[schemas.Driver])
+def get_all_drivers(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    drivers = crud_operations.get_drivers(db, skip=skip, limit=limit)
+    return drivers
+
+
+# Get a specific driver
+@app.get("/drivers/{driver_id}", response_model=schemas.Driver)
+def get_driver(driver_id: int, db: Session = Depends(get_db)):
+    driver = crud_operations.get_driver(db, driver_id=driver_id)
+    if driver is None:
+        raise HTTPException(status_code=404, detail="Driver not found")
+    return driver
+
+
+# Create a new driver
+@app.post("/createDriver/", response_model=schemas.Driver)
+def create_driver(driver: schemas.DriverCreate, db: Session = Depends(get_db)):
+    return crud_operations.create_driver(db=db, driver=driver)
+
+
+# Delete a driver
+@app.delete("/deleteDriver/{driver_id}")
+def delete_driver(driver_id: int, db: Session = Depends(get_db)):
+    if not crud_operations.delete_driver(db, driver_id):
+        raise HTTPException(status_code=404, detail="Driver not found")
+    return {"detail": "Driver deleted"}
+```
+
+**database.py**
+```python
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+SQLALCHEMY_DATABASE_URL = "sqlite:///./sqlitedb/rallycross.db"
+
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, echo=True, connect_args={"check_same_thread": False}
+)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
+
+```
+
+**crud_operations.py**
+```python
+from sqlalchemy.orm import Session
+import models
+import schemas
+
+
+def get_drivers(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Driver).offset(skip).limit(limit).all()
+
+
+def get_driver(db: Session, driver_id: int):
+    return db.query(models.Driver).filter(models.Driver.id == driver_id).first()
+
+
+def create_driver(db: Session, driver: schemas.DriverCreate):
+    db_driver = models.Driver(first_name=driver.first_name,
+                              last_name=driver.last_name,
+                              country=driver.country,
+                              team=driver.team,
+                              is_active=driver.is_active)
+    db.add(db_driver)
+    db.commit()
+    db.refresh(db_driver)
+    return db_driver
+
+
+def delete_driver(db: Session, driver_id: int):
+    driver = db.query(models.Driver).filter(models.Driver.id == driver_id).first()
+    if driver is not None:
+        db.delete(driver)
+        db.commit()
+        return True
+    return False
+```
+**models.py**
+```python
+```
+**schemas.py**
+```python
+```
+
 
 ### 2.1 Postman
+#### GET --> /drivers/
+![img_13.png](img/img_13.png)
+#### GET --> /drivers/{driver_id}
+![img_14.png](img/img_14.png)
+![img_15.png](img/img_15.png)
+#### POST --> /createDriver/
+![img_11.png](img/img_11.png)
+![img_12.png](img/img_12.png)
+#### DELETE --> /deleteDriver/
+![img_16.png](img/img_16.png)
+![img_17.png](img/img_17.png)
+If the driver you want to delete is already deleted then you get the message:
+![img_18.png](img/img_18.png)
 ### 2.2 OpenAPI Docs
+#### General overview
+![img.png](img/img.png)
+#### Get all drivers
+![img_1.png](img/img_1.png)
+![img_2.png](img/img_2.png)
+#### Get a specific driver
+![img_3.png](img/img_3.png)
+![img_4.png](img/img_4.png)
+#### Add a driver
+![img_8.png](img/img_8.png)
+![img_9.png](img/img_9.png)
+Testen:
+![img_10.png](img/img_10.png)
+#### Remove a driver
+![img_5.png](img/img_5.png)
+![img_6.png](img/img_6.png)
+Testen:
+![img_7.png](img/img_7.png)
 
 ## 3. Hosted API
 
-Link to the hosted API...
+Link to the hosted API: https://system-service-lucassyroit.cloud.okteto.net/
+Link to the hosted OpenAPI docs: https://system-service-lucassyroit.cloud.okteto.net/docs
