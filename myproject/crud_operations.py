@@ -1,11 +1,10 @@
 from sqlalchemy.orm import Session
-
 import models
 import schemas
 
 
-def get_drivers(db: Session):
-    return db.query(models.Driver).all()
+def get_drivers(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Driver).offset(skip).limit(limit).all()
 
 
 def get_driver(db: Session, driver_id: int):
@@ -13,13 +12,7 @@ def get_driver(db: Session, driver_id: int):
 
 
 def create_driver(db: Session, driver: schemas.DriverCreate):
-    db_driver = models.Driver(
-        first_name=driver.first_name,
-        last_name=driver.last_name,
-        country=driver.country,
-        team=driver.team,
-        is_active=driver.is_active
-    )
+    db_driver = models.Driver(first_name=driver.first_name, last_name=driver.last_name, country=driver.country, team=driver.team)
     db.add(db_driver)
     db.commit()
     db.refresh(db_driver)

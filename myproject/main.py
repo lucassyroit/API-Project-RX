@@ -41,14 +41,14 @@ def get_db():
 
 # Get all drivers
 @app.get("/drivers/", response_model=List[schemas.Driver])
-def read_drivers(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def get_all_drivers(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     drivers = crud_operations.get_drivers(db, skip=skip, limit=limit)
     return drivers
 
 
 # Get a specific driver
 @app.get("/drivers/{driver_id}", response_model=schemas.Driver)
-def read_driver(driver_id: int, db: Session = Depends(get_db)):
+def get_driver(driver_id: int, db: Session = Depends(get_db)):
     driver = crud_operations.get_driver(db, driver_id=driver_id)
     if driver is None:
         raise HTTPException(status_code=404, detail="Driver not found")
@@ -56,9 +56,10 @@ def read_driver(driver_id: int, db: Session = Depends(get_db)):
 
 
 # Create a new driver
-@app.post("/createDriver/", response_model=schemas.DriverCreate)
+@app.post("/createDiver/", response_model=schemas.Driver)
 def create_driver(driver: schemas.DriverCreate, db: Session = Depends(get_db)):
     return crud_operations.create_driver(db=db, driver=driver)
+
 
 
 # Delete a driver
@@ -67,9 +68,3 @@ def delete_driver(driver_id: int, db: Session = Depends(get_db)):
     if not crud_operations.delete_driver(db, driver_id):
         raise HTTPException(status_code=404, detail="Driver not found")
     return {"detail": "Driver deleted"}
-
-
-
-
-
-

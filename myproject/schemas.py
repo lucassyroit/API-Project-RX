@@ -4,17 +4,20 @@ from pydantic import BaseModel
 class DriverBase(BaseModel):
     first_name: str
     last_name: str
-    country: str
-    team: str
-    is_active: bool
 
 
 class DriverCreate(DriverBase):
-    pass
+    country: str
+    team: str
+
+    class Config:
+        orm_mode = True
 
 
 class Driver(DriverBase):
     id: int
+    country: str
+    team: str
 
     class Config:
         orm_mode = True
