@@ -62,7 +62,7 @@ def get_driver(driver_id: int, db: Session = Depends(get_db)):
 
 
 # Create a new driver
-@app.post("/createDiver/", response_model=schemas.Driver)
+@app.post("/createDriver/", response_model=schemas.Driver)
 def create_driver(driver: schemas.DriverCreate, db: Session = Depends(get_db)):
     return crud_operations.create_driver(db=db, driver=driver)
 
