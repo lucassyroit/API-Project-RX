@@ -56,13 +56,13 @@ def read_driver(driver_id: int, db: Session = Depends(get_db)):
 
 
 # Create a new driver
-@app.post("/drivers/", response_model=schemas.Driver)
+@app.post("/createDriver/", response_model=schemas.Driver)
 def create_driver(driver: schemas.DriverCreate, db: Session = Depends(get_db)):
     return crud_operations.create_driver(db=db, driver=driver)
 
 
 # Delete a driver
-@app.delete("/drivers/{driver_id}")
+@app.delete("/deleteDriver/{driver_id}")
 def delete_driver(driver_id: int, db: Session = Depends(get_db)):
     if not crud_operations.delete_driver(db, driver_id):
         raise HTTPException(status_code=404, detail="Driver not found")
